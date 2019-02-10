@@ -332,7 +332,7 @@ Now with **--with-xmlid**.
 ```
 
 <a id=required></a>With the option **-r | --required**, all the skeleton code related to optional fields is commented. It's handy when you have a few fields to import into a model that has a lot. You still have all the fields described, but you don't need to (un)comment or remove lots of them. 
->**Note:** Some fields are always commented because they should not be imported. It's namely the case with related stored, many2many, computed and non stored (and non related) fields.
+>**Note:** Some fields are always commented because they should not be imported. It's namely the case with related stored, computed and non stored (and non related) fields.
 
 At the end of the skeleton code stands the command line that launches a transformation to one import file (here: _dest_my_model_).
 ```
