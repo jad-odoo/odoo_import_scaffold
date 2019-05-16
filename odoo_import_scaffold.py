@@ -422,11 +422,14 @@ class ModelField:
         """
         l = []
         model_model = self.connection.get_model(model)
-        vals = model_model.fields_get([self.name]).get(self.name).get('selection')
-        if not vals:
-            return l
-        for sel in vals:
-            l.append("'%s'%s%s" % (sel[0], selection_sep, sel[1]))
+        try:
+            vals = model_model.fields_get([self.name]).get(self.name).get('selection')
+            if not vals:
+                return l
+            for sel in vals:
+                l.append("'%s'%s%s" % (sel[0], selection_sep, sel[1]))
+        except:
+            pass
         return l
 
     def __get_default(self):
