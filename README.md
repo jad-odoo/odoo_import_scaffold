@@ -10,6 +10,8 @@ Each new skeleton code is fully integrated in the other project files.
 
 ## Table Of Content
 
+- [odoo_import_scaffold](#odooimportscaffold)
+  - [Table Of Content](#table-of-content)
 - [1. Installation](#1-installation)
 - [2. How To Use It](#2-how-to-use-it)
   - [2.1. Create the project structure](#21-create-the-project-structure)
@@ -192,6 +194,7 @@ The scaffolding is started with the option **-s | --scaffold**. It creates the f
 * _path_**/prefix.py**: defines all external ID prefixes (module names) and constants used in the project.
 * _path_**/funclib.py**: common functions.
 * _path_**/mapping.py**: common mapping dictionaries.
+* _path_**/clean_data.py**: script to remove imported data.
 
 >**Note:** All shell scripts have the extension `.cmd` on Windows, or `.sh` on other platforms.
 
@@ -345,7 +348,7 @@ This line is preset with some options: _groupby_, _worker_ and _batch_size_ you 
 
 By default, the generated python script is located in the current path and named as the model with dots '.' replaced by underscores '_' (my.model -> my_model.py). You can set another file name (and location) with the option **-o | --outfile**.
 
-<a id=append></a>When a model is added to the project, the needed references can be automatically added in `files.py`, `prefixes.py`, the transform and the load scripts with the option **-a | --append**. 
+<a id=append></a>When a model is added to the project, the needed references can be automatically added in `files.py`, `prefixes.py`, `clean_data.py`, the transform and the load scripts with the option **-a | --append**. 
 
 * In `files.py`: the names of the client file and the import file.
     ```
@@ -456,5 +459,5 @@ odoo_import_scaffold.py -l
 
 # 8. Known Issues
 
-* The option **-a | --append** adds the model references event if they already exist in their respective files.
+* The option **-a | --append** adds the model references event if they already exist in their respective files (`prefix.py`, `clean_data.py`).
 * With the option **--map-selection**, the mapping dictionaries of the selection fields are added even they already exist in `mapping.py`.

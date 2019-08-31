@@ -11,7 +11,7 @@ import io
 import socket
 from odoo_csv_tools.lib import conf_lib
 
-module_version = '1.1.0'
+module_version = '1.2.0'
 offline = False
 dbname = ''
 hostname = ''
@@ -351,6 +351,45 @@ def create_file_lib(file):
         f.write("\n")
 
 
+@check_file_exists
+def create_file_clean_data(file):
+    """
+    Create the skeleton of clean_data.py.
+    """
+    with open(file, 'w') as f:
+        f.write("# -*- coding: utf-8 -*-\n\n")
+        f.write("# This script remove the data created by the import.\n\n")
+        f.write("import odoolib\n")
+        f.write("from odoo_csv_tools.lib import conf_lib\n")
+        f.write("from prefix import *\n")
+        f.write("from files import *\n\n")
+        f.write("connection = conf_lib.get_server_connection(config_file)\n\n")
+        f.write("def delete_model_data(connection, model, demo = False):\n")
+        f.write("    model_model = connection.get_model(model)\n")
+        f.write("    record_ids = model_model.search([])\n")
+        f.write("    if demo:\n")
+        f.write("        print 'Will remove %s records from %s' % (len(record_ids), model)\n")
+        f.write("    else:\n")
+        f.write("        print 'Remove %s records from %s' % (len(record_ids), model)\n")
+        f.write("        model_model.unlink(record_ids)\n")
+        f.write("\n\n")
+        f.write("def delete_xml_id(connection, model, module, demo = False):\n")
+        f.write("    data_model = connection.get_model('ir.model.data')\n")
+        f.write("    data_ids = data_model.search([('module', '=', module), ('model', '=', model)])\n")
+        f.write("    records = data_model.read(data_ids, ['res_id'])\n")
+        f.write("    record_ids = []\n")
+        f.write("    for rec in records:\n")
+        f.write("        record_ids.append(rec['res_id'])\n")
+        f.write("    if demo:\n")
+        f.write("        print 'Will remove %s xml_id %s from %s' % (len(record_ids), module, model)\n")
+        f.write("    else:\n")
+        f.write("        print 'Remove %s xml_id %s from %s' % (len(record_ids), module, model)\n")
+        f.write("        connection.get_model(model).unlink(record_ids)\n")
+        f.write("\n\n")
+        f.write("project_name = '%s'\n" % project_name)
+        f.write("demo = True\n\n")
+
+
 def scaffold_dir():
     """
     Create the whole directory structure and the basic project files.
@@ -373,6 +412,7 @@ def scaffold_dir():
     create_file_mapping(os.path.join(base_dir, 'mapping.py'))
     create_file_files(os.path.join(base_dir, 'files.py'))
     create_file_lib(os.path.join(base_dir, 'funclib.py'))
+    create_file_clean_data(os.path.join(base_dir, 'clean_data.py'))
 
     sys.stdout.write("Project created in %s\n" % os.path.abspath(base_dir))
 
@@ -813,8 +853,16 @@ def scaffold_model():
             f.write("src_%s = os.path.join(data_src_dir, '%s.csv')\n" % (model_mapped_name , model_mapped_name))
             f.write("dest_%s = os.path.join(data_dest_dir, '%s.csv')\n" % (model_mapped_name , model))
         sys.stdout.write('%s files added in %s\n' % (model, script))
+
+        # Add model to clean_data.py
+        script = os.path.join(dirname, 'clean_data.py')
+        # line = "PREFIX_%s = '%s_%s' %s project_name\n" % (model_mapped_name.upper(), '%s', model_mapped_name, '%')
+        # line = "delete_xml_id(connection, '%s', '%s_%s' %s (demo, project_name))\n" % (model, '%s', model_mapped_name, '%')
+        with open(script, 'a') as f:
+            f.write("delete_xml_id(connection, '%s', '%s_%s' %s project_name, demo)\n" % (model, '%s', model_mapped_name, '%'))
+        sys.stdout.write('Model %s added in %s\n' % (model, script))
     else:
-        sys.stdout.write("You should probably add this model in files.py, prefix.py, transform%s and load%s with -a|--append\n" % (script_extension, script_extension))
+        sys.stdout.write("You should probably add this model in files.py, prefix.py, clean_data.py, transform%s and load%s with -a|--append\n" % (script_extension, script_extension))
 
 
 ##############################################################################
