@@ -11,7 +11,7 @@ import io
 import socket
 from odoo_csv_tools.lib import conf_lib
 
-module_version = '1.0.0'
+module_version = '1.1.0'
 offline = False
 dbname = ''
 hostname = ''
@@ -553,6 +553,9 @@ class ModelField:
 
         else:
             return "mapper.val('%s')" % self.name
+    
+    def is_required(self):
+        return self.required and len(self.default_value) == 0
 
 
 def load_fields():
@@ -656,13 +659,13 @@ def write_mapping(file):
     if not wmetadata:
         filtering = "%s and f.name not in ('create_uid', 'write_uid', 'create_date', 'write_date', 'active')" % filtering
     fields = filter(eval(filtering), fields)
-    fields = sorted(fields, key=lambda f: ((f.name != 'id'), not f.required, f.name))
+    fields = sorted(fields, key=lambda f: ((f.name != 'id'), not f.is_required(), f.name))
     
     if skeleton == 'dict':
         file.write('%s = {\n' % model_mapping_name)
         for f in fields:
             if verbose: sys.stdout.write('Write field %s\n' % f.name)
-            line_start = '# ' if (required and not f.required and f.name != 'id') or f.import_warn_msg else ''
+            line_start = '# ' if (required and not f.is_required() and f.name != 'id') or f.import_warn_msg else ''
             file.write ("    # %s\n" % f.get_info())
             file.write("    %s'%s': %s,\n" % (line_start,f.get_mapping_name(), f.get_mapper_command().replace('OBJECT_XMLID_PREFIX', 'PREFIX_%s' % model_mapped_name.upper())))
         file.write('}\n\n')
@@ -671,14 +674,14 @@ def write_mapping(file):
         function_prefix = 'handle_%s_' % model_mapped_name
         for f in fields:
             if verbose: sys.stdout.write('Write map function of field %s\n' % f.name)
-            line_start = '# ' if (required and not f.required) or f.import_warn_msg else ''
+            line_start = '# ' if (required and not f.is_required()) or f.import_warn_msg else ''
             file.write ("%sdef %s%s(line):\n" % (line_start, function_prefix, f.name))
             file.write ("%s    return %s(line)\n\n" % (line_start,f.get_mapper_command().replace('OBJECT_XMLID_PREFIX', 'PREFIX_%s' % model_mapped_name.upper())))
         
         file.write('%s = {\n' % model_mapping_name)
         for f in fields:
             if verbose: sys.stdout.write('Write field %s\n' % f.name)
-            line_start = '# ' if (required and not f.required and f.name != 'id') or f.import_warn_msg else ''
+            line_start = '# ' if (required and not f.is_required() and f.name != 'id') or f.import_warn_msg else ''
             file.write ("    # %s\n" % f.get_info())
             file.write ("    %s'%s': %s,\n" % (line_start,f.get_mapping_name(), '%s%s' % (function_prefix, f.name)))
         file.write('}\n\n')
@@ -691,7 +694,7 @@ def write_mapping(file):
                 pf.write("# Selection fields in model %s\n\n" % model)
                 for f in filter(lambda x: x.type == 'selection', fields):
                     sys.stdout.write('Write mapping of selection field %s\n' % f.name)
-                    line_start = '# ' if (required and not f.required) else ''
+                    line_start = '# ' if (required and not f.is_required()) else ''
                     pf.write("%s%s_%s_map = {\n" % (line_start, model_mapped_name, f.name))
                     for sel in f.selection:
                         key, val = sel.split(selection_sep)
@@ -702,7 +705,7 @@ def write_mapping(file):
                 pf.write("# Selection fields in model %s\n\n" % unicode(model, 'utf-8'))
                 for f in filter(lambda x: x.type == 'selection', fields):
                     sys.stdout.write('Write mapping of selection field %s\n' % f.name)
-                    line_start = '# ' if (required and not f.required) else ''
+                    line_start = '# ' if (required and not f.is_required()) else ''
                     pf.write("%s%s_%s_map = {\n" % (line_start, model_mapped_name, f.name))
                     for sel in f.selection:
                         key, val = sel.split(selection_sep)
