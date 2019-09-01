@@ -72,7 +72,7 @@ Main options:
 
 **-t | -- host** sets the hostname of the database. Default is "localhost".
 
-**-u | --userid** sets the user id used by RPC calls. Default is "1".
+**-u | --userid** sets the user id used by RPC calls. Default is "2".
 
 More information on project scaffolding [here](#3-folders-structure-and-project-files).
 
@@ -205,7 +205,7 @@ The other scaffolding options preconfigure the connection files.
 
  When the options **-d | --db** and **-t | --host** are used, the database name and the hostname are stored in the local and current connection files.  The default hostname is _localhost_ and the default credentials are _admin/admin_. 
  
- The default userid is 1 and can be changed with the option **-u | --userid** (ie. 2 if you target an Odoo 12 instance with the admin user).
+ The default userid is 2 and can be changed with the option **-u | --userid**.
 
 The current and local connection files are automatically set up to establish encrypted connections if you target a remote host. Actually, the connection won't be encrypted only if the  database is on your localhost.
 

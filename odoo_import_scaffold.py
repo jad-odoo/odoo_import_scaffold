@@ -11,7 +11,7 @@ import io
 import socket
 from odoo_csv_tools.lib import conf_lib
 
-module_version = '1.3.1'
+module_version = '1.3.2'
 offline = False
 dbname = ''
 hostname = ''
@@ -955,7 +955,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--path', dest='path', default=default_base_dir, required=False, help='project path (default: current dir)')
     parser.add_argument('-d', '--db', dest='dbname', default='', required=False, help='target database. If omitted, it is the first part of HOST')
     parser.add_argument('-t', '--host', dest='host', default='localhost', required=False, help='hostname of the database (default: localhost)')
-    parser.add_argument('-u', '--userid', dest='userid', type=int, default=1, required=False, help='user id of RPC calls. Use 2 for Odoo 12 admin (default: 1)')
+    parser.add_argument('-u', '--userid', dest='userid', type=int, default=2, required=False, help='user id of RPC calls (default: 2)')
     parser.add_argument('-m', '--model', dest='model', required=False, help='technical name of the model to skeleton (ex: res.partner)')
     parser.add_argument('-c', '--config', dest='config', default=os.path.join(conf_dir_name,'connection.conf'), required=False, help='configuration file (relative to --path) defining the RPC connections parameters (default: %s)' % os.path.join(conf_dir_name, 'connection.conf'))
     parser.add_argument('-o', '--outfile', dest='outfile', required=False, help='python script of the model skeleton code (default: model name with dots replaced by underscores)')
