@@ -57,7 +57,7 @@ git clone git@github.com:jad-odoo/odoo_import_scaffold.git
 Run the command:
 
 ```
-odoo_import_scaffold.py -s -p project_dir [-d my_db] [-t my_db.odoo.com] [-u 2]
+odoo_import_scaffold.py -s -p project_dir [-d my_db] [-t my_db.odoo.com]
 ```
 
 This will create the needed folders (`conf/`, `data/`, ...) and a set of files (`conf/connection.conf`, `prefix.py`, ...) in the folder _project_dir_. The complete structure is described [here](#31-created-folders-and-files).

@@ -11,7 +11,7 @@ import io
 import socket
 from odoo_csv_tools.lib import conf_lib
 
-module_version = '1.3.2'
+module_version = '1.3.3'
 offline = False
 dbname = ''
 hostname = ''
@@ -960,7 +960,7 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--config', dest='config', default=os.path.join(conf_dir_name,'connection.conf'), required=False, help='configuration file (relative to --path) defining the RPC connections parameters (default: %s)' % os.path.join(conf_dir_name, 'connection.conf'))
     parser.add_argument('-o', '--outfile', dest='outfile', required=False, help='python script of the model skeleton code (default: model name with dots replaced by underscores)')
     parser.add_argument('-k', '--skeleton', dest='skeleton', choices=['dict','map'], default='dict', required = False, help='skeleton code type. dict: generate mapping as a simple dictionary. map: create the same dictionary with map functions for each field (default: dict)')
-    parser.add_argument('-r', '--required', dest='required',  action='store_true', help='keep only the required fields (comment the code related to optional fields)')
+    parser.add_argument('-r', '--required', dest='required',  action='store_false', help='keep only the required fields without default value (default: true)')
     parser.add_argument('--stored', dest='wstored', action='store_true', help="include only stored fields")
     parser.add_argument('--with-o2m', dest='wo2m', action='store_true', help="include one2many fields")
     parser.add_argument('--with-metadata', dest='wmetadata', action='store_true', help="include metadata fields")
