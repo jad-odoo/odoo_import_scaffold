@@ -11,7 +11,7 @@ import io
 import socket
 from odoo_csv_tools.lib import conf_lib
 
-module_version = '1.2.0'
+module_version = '1.3.0'
 offline = False
 dbname = ''
 hostname = ''
@@ -231,6 +231,13 @@ def create_file_prefix(file):
         f.write("# Define here all values in client files considered as FALSE value.\n")
         f.write("false_values = ['FALSE', 'False', 'false', 'NO', 'No', 'no', 'N', 'n', '0', '0,0', '0.0']\n")
         f.write("\n")
+        f.write("# Define the languages used in the import.\n")
+        f.write("# These will be installed by calling install_lang.py\n")
+        f.write("# Key: language code used in the client file\n")
+        f.write("# Value: the Odoo lang code\n")
+        f.write("res_lang_map = {\n")
+        f.write("#    'E': 'en_US',\n")
+        f.write("}\n\n")
         f.write("# XML ID PREFIXES\n")
     
 
@@ -390,6 +397,25 @@ def create_file_clean_data(file):
         f.write("demo = True\n\n")
 
 
+@check_file_exists
+def create_file_install_lang(file):
+    """
+    Create the skeleton of install_lang.py.
+    """
+    with open(file, 'w') as f:
+        f.write("# -*- coding: utf-8 -*-\n\n")
+        f.write("import openerplib\n")
+        f.write("from prefix import *\n")
+        f.write("from files import *\n")
+        f.write("from odoo_csv_tools.lib import conf_lib\n\n")
+        f.write("connection = conf_lib.get_server_connection(config_file)\n\n")
+        f.write("model_lang = connection.get_model('base.language.install')\n\n")
+        f.write("for key in res_lang_map.keys():\n")
+        f.write("    lang = res_lang_map[key]\n")
+        f.write("    res = model_lang.create({'lang': lang})\n")
+        f.write("    model_lang.lang_install(res)\n")
+
+
 def scaffold_dir():
     """
     Create the whole directory structure and the basic project files.
@@ -413,6 +439,7 @@ def scaffold_dir():
     create_file_files(os.path.join(base_dir, 'files.py'))
     create_file_lib(os.path.join(base_dir, 'funclib.py'))
     create_file_clean_data(os.path.join(base_dir, 'clean_data.py'))
+    create_file_install_lang(os.path.join(base_dir, 'install_lang.py'))
 
     sys.stdout.write("Project created in %s\n" % os.path.abspath(base_dir))
 
