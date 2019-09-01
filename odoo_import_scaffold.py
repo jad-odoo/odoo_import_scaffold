@@ -11,7 +11,7 @@ import io
 import socket
 from odoo_csv_tools.lib import conf_lib
 
-module_version = '1.3.3'
+module_version = '1.4.0'
 offline = False
 dbname = ''
 hostname = ''
@@ -582,6 +582,9 @@ class ModelField:
         else:
             return u''.join((self.info)).encode('utf-8')
 
+    def get_name(self):
+        return self.name if fieldname=='tech' else self.string
+
     def get_mapping_name(self):
         """
         Return the field name as needed in the import file.
@@ -599,26 +602,25 @@ class ModelField:
                 return "mapper.m2o_map(OBJECT_XMLID_PREFIX, mapper.concat('_', 'CSV_COLUMN1','CSV_COLUMN2'))"
         
         elif self.type in ('integer', 'float', 'monetary'):
-            return "mapper.num('%s')" % self.name
+            return "mapper.num('%s')" % self.get_name()
         elif self.type in ('boolean'):
-            # return "mapper.map_val('%s', bool_map)" % self.name
-            return "mapper.bool_val('%s', true_vals=true_values, false_vals=false_values)" % self.name
+            return "mapper.bool_val('%s', true_vals=true_values, false_vals=false_values)" % self.get_name()
         elif self.type in ('datetime'):
-            return "mapper.val('%s', postprocess=lambda x: datetime.strptime(x, 'CSV_DATE_FORMAT').strftime('%%Y-%%m-%%d 00:00:00'))" % self.name
+            return "mapper.val('%s', postprocess=lambda x: datetime.strptime(x, 'CSV_DATE_FORMAT').strftime('%%Y-%%m-%%d 00:00:00'))" % self.get_name()
         elif self.type in ('binary'):
-            return "mapper.binary('%s', data_raw_dir)" % self.name
+            return "mapper.binary('%s', data_raw_dir)" % self.get_name()
         elif self.type in ('selection'):
             if mapsel:
-                return "mapper.map_val('%s', %s_%s_map)" % (self.name, model_mapped_name, self.name)
+                return "mapper.map_val('%s', %s_%s_map)" % (self.get_name(), model_mapped_name, self.name)
             else:
-                return "mapper.val('%s')" % self.name
+                return "mapper.val('%s')" % self.get_name()
         elif self.type in ('many2many') and not wxmlid:
-            return "mapper.m2m(PREFIX_%s, '%s')" % (self.relation.replace('.', '_').upper(), self.name)
+            return "mapper.m2m(PREFIX_%s, '%s')" % (self.relation.replace('.', '_').upper(), self.get_name())
         elif self.type in ('many2one', 'one2many', 'many2many') and not wxmlid:
-            return "mapper.m2o(PREFIX_%s, '%s')" % (self.relation.replace('.', '_').upper(), self.name)
+            return "mapper.m2o(PREFIX_%s, '%s')" % (self.relation.replace('.', '_').upper(), self.get_name())
 
         else:
-            return "mapper.val('%s')" % self.name
+            return "mapper.val('%s')" % self.get_name()
     
     def is_required(self):
         return self.required and len(self.default_value) == 0
@@ -961,6 +963,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--outfile', dest='outfile', required=False, help='python script of the model skeleton code (default: model name with dots replaced by underscores)')
     parser.add_argument('-k', '--skeleton', dest='skeleton', choices=['dict','map'], default='dict', required = False, help='skeleton code type. dict: generate mapping as a simple dictionary. map: create the same dictionary with map functions for each field (default: dict)')
     parser.add_argument('-r', '--required', dest='required',  action='store_false', help='keep only the required fields without default value (default: true)')
+    parser.add_argument('--field-name', dest='fieldname', choices=['tech','user'], default='user', required = False, help='Field name in import file. tech=technical name, user=User name (default: user). Generates the mapping accordingly.')
     parser.add_argument('--stored', dest='wstored', action='store_true', help="include only stored fields")
     parser.add_argument('--with-o2m', dest='wo2m', action='store_true', help="include one2many fields")
     parser.add_argument('--with-metadata', dest='wmetadata', action='store_true', help="include metadata fields")
@@ -999,6 +1002,7 @@ if __name__ == '__main__':
     force = args.force
     verbose = args.verbose
     version = args.version
+    fieldname = args.fieldname
 
     # Do unit actions
     if version:

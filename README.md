@@ -247,7 +247,7 @@ mapping_my_model =  {
     ...
 }
 ```
-In both skeleton types, the column names of the client file are supposed to be the same as the field names.
+In both skeleton types, the default columns name can be chosen between the technical or the user field name in Odoo with option **--field-name tech** or **--field-name user**.
 
 The first displayed field is always the "id" field, then the required ones, then the optional ones, both sorted by name. Their map functions, if any, follow the same order.
 
