@@ -11,7 +11,7 @@ import io
 import socket
 from odoo_csv_tools.lib import conf_lib
 
-module_version = '1.4.0'
+module_version = '1.4.1'
 offline = False
 dbname = ''
 hostname = ''
@@ -469,6 +469,92 @@ def create_file_uninstall_modules(file):
         f.write("        rpc_thread.spawn_thread(model_module.button_immediate_uninstall, [module['id']])\n")
 
 
+@check_file_exists
+def create_file_init_map(file):
+    """
+    Create the skeleton of init_map.py.
+    """
+    with open(file, 'w') as f:
+        f.write("# -*- coding: utf-8 -*-\n\n")
+        f.write("import odoolib\n")
+        f.write("from prefix import *\n")
+        f.write("from files import *\n")
+        f.write("from odoo_csv_tools.lib import conf_lib\n")
+        f.write("import json\n")
+        f.write("import io\n\n")
+        f.write("connection = conf_lib.get_server_connection(config_file)\n\n")
+        f.write("def build_map_product_category_id(filename=''):\n")
+        f.write("    # Build a dictionary {product_category : xml_id} of all existing product_category.\n")
+        f.write("    model_data = connection.get_model('ir.model.data')\n")
+        f.write("    model_product_category = connection.get_model('product.category')\n")
+        f.write("    recs = model_product_category.search_read([], ['id', 'name'])\n\n")
+        f.write("    res_map = {}\n")
+        f.write("    for rec in recs:\n")
+        f.write("        data = model_data.search_read([('res_id', '=', rec['id']), ('model', '=', 'product.category')], ['module', 'name'])\n")
+        f.write("        if len(data):\n")
+        f.write("            key = rec['name'].strip()\n")
+        f.write("            val = '.'.join([data[0]['module'], data[0]['name'] ])\n")
+        f.write("            res_map[key] = val.strip()\n")
+        f.write("        # else:\n")
+        f.write("        #     print 'Product category %s has no XML_ID (id: %s)' % (rec['name'], rec['id'])\n\n")
+        f.write("    if filename:\n")
+        f.write("        with open(filename, 'w') as fp:\n")
+        f.write("            json.dump(res_map, fp)\n\n")
+        f.write("    return res_map\n\n")
+        f.write("# Execute mapping\n")
+        f.write("# dummy = build_map_product_category_id(work_map_product_category_id)\n\n")
+        f.write("# Add in files.py\n")
+        f.write("# work_map_product_category_id = os.path.join(data_src_dir, 'work_map_product_category_id.json')\n\n")
+        f.write("# Add in transformation script\n")
+        f.write("# map_product_category_id = {}\n")
+        f.write("# with io.open(work_map_product_category_id, 'r') as fp:\n")
+        f.write("#     map_product_category_id = json.load(fp, encoding='utf-8')\n\n")
+        f.write("# Add in transformation script to map 'id' column. REVIEW COLUNM NAME and PREFIX\n")
+        f.write("# def handle_product_category_id(line):\n")
+        f.write("#     categ_name = line['Product Category']\n")
+        f.write("#     try:\n")
+        f.write("#         categ_xml_id = map_product_category_id[categ_name]\n")
+        f.write("#     except:\n")
+        f.write("#         categ_xml_id = mapper.m2o(PREFIX_PRODUCT_CATEGORY, 'Product Category')(line)\n")
+        f.write("#     return categ_xml_id\n\n")
+        f.write("##################################################################################################\n\n")
+        f.write("def build_account_map(company_id, filename=''):\n")
+        f.write("    # Build a dictionary {account_code : xml_id} of all existing accounts of a company.\n")
+        f.write("    model_data = connection.get_model('ir.model.data')\n")
+        f.write("    model_account = connection.get_model('account.account')\n")
+        f.write("    recs = model_account.search_read([('company_id', '=', company_id)], ['id', 'code'])\n\n")
+        f.write("    res_map = {}\n")
+        f.write("    for rec in recs:\n")
+        f.write("        data = model_data.search_read([('res_id', '=', rec['id']), ('model', '=', 'account.account')], ['module', 'name'])\n")
+        f.write("        if len(data):\n")
+        f.write("            key = rec['code'].strip()\n")
+        f.write("            val = '.'.join([data[0]['module'], data[0]['name'] ])\n")
+        f.write("            res_map[key] = val.strip()\n")
+        f.write("        # else:\n")
+        f.write("        #     print 'Account %s has no XML_ID' % rec['code']\n\n")
+        f.write("    if filename:\n")
+        f.write("        with open(filename, 'w') as fp:\n")
+        f.write("            json.dump(res_map, fp)\n\n")
+        f.write("    return res_map\n\n")
+        f.write("# Execute mapping\n")
+        f.write("# dummy = build_account_map(1, work_map_account_code_id)\n\n")
+        f.write("# Add in files.py\n")
+        f.write("# work_map_account_code_id = os.path.join(data_src_dir, 'work_map_account_code_id.json')\n\n")
+        f.write("# Add in transformation script\n")
+        f.write("# map_account_code_id = {}\n")
+        f.write("# with io.open(work_map_account_code_id, 'r') as fp:\n")
+        f.write("#     map_account_code_id = json.load(fp, encoding='utf-8')\n\n")
+        f.write("# Add in transformation script to map 'id' column. REVIEW COLUNM NAME and PREFIX\n")
+        f.write("# def handle_account_account_id_map(line):\n")
+        f.write("#     code = line['Accounts']\n")
+        f.write("#     try:\n")
+        f.write("#         val = map_account_code_id[code]\n")
+        f.write("#     except:\n")
+        f.write("#         val = mapper.m2o(PREFIX_ACCOUNT_ACCOUNT, 'Accounts')(line)\n")
+        f.write("#     return val\n\n")
+        f.write("##################################################################################################\n\n")
+
+
 def scaffold_dir():
     """
     Create the whole directory structure and the basic project files.
@@ -495,6 +581,7 @@ def scaffold_dir():
     create_file_install_lang(os.path.join(base_dir, 'install_lang.py'))
     create_file_install_modules(os.path.join(base_dir, 'install_modules.py'))
     create_file_uninstall_modules(os.path.join(base_dir, 'uninstall_modules.py'))
+    create_file_init_map(os.path.join(base_dir, 'init_map.py'))
 
     sys.stdout.write("Project created in %s\n" % os.path.abspath(base_dir))
 

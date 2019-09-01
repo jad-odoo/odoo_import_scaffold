@@ -198,6 +198,7 @@ The scaffolding is started with the option **-s | --scaffold**. It creates the f
 * _path_**/install_lang.py**: script to install the languages defined in `prefix.py`.
 * _path_**/install_modules.py**: script to install modules.
 * _path_**/uninstall_modules.py**: script to uninstall modules.
+* _path_**/init_map.py**: skeleton script to initialize models mapping.
 
 >**Note:** All shell scripts have the extension `.cmd` on Windows, or `.sh` on other platforms.
 
