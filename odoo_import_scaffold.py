@@ -11,7 +11,7 @@ import io
 import socket
 from odoo_csv_tools.lib import conf_lib
 
-module_version = '1.3.0'
+module_version = '1.3.1'
 offline = False
 dbname = ''
 hostname = ''
@@ -393,7 +393,6 @@ def create_file_clean_data(file):
         f.write("        print 'Remove %s xml_id %s from %s' % (len(record_ids), module, model)\n")
         f.write("        connection.get_model(model).unlink(record_ids)\n")
         f.write("\n\n")
-        f.write("project_name = '%s'\n" % project_name)
         f.write("demo = True\n\n")
 
 
