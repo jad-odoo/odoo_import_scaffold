@@ -403,7 +403,7 @@ def create_file_install_lang(file):
     """
     with open(file, 'w') as f:
         f.write("# -*- coding: utf-8 -*-\n\n")
-        f.write("import openerplib\n")
+        f.write("import odoolib\n")
         f.write("from prefix import *\n")
         f.write("from files import *\n")
         f.write("from odoo_csv_tools.lib import conf_lib\n\n")
@@ -422,9 +422,8 @@ def create_file_install_modules(file):
     """
     with open(file, 'w') as f:
         f.write("# -*- coding: utf-8 -*-\n\n")
-        f.write("import openerplib\n")
         f.write("import sys\n")
-        f.write("import openerplib\n")
+        f.write("import odoolib\n")
         f.write("from prefix import *\n")
         f.write("from files import *\n")
         f.write("from odoo_csv_tools.lib import conf_lib\n")
@@ -451,9 +450,8 @@ def create_file_uninstall_modules(file):
     """
     with open(file, 'w') as f:
         f.write("# -*- coding: utf-8 -*-\n\n")
-        f.write("import openerplib\n")
         f.write("import sys\n")
-        f.write("import openerplib\n")
+        f.write("import odoolib\n")
         f.write("from prefix import *\n")
         f.write("from files import *\n")
         f.write("from odoo_csv_tools.lib import conf_lib\n")
@@ -720,7 +718,7 @@ def write_begin(file):
     file.write("from datetime import datetime\n")
     file.write("\n")
     file.write("# Needed for RPC calls\n")
-    file.write("# import openerplib\n")
+    file.write("# import odoolib\n")
     file.write("# from odoo_csv_tools.lib import conf_lib\n")
     file.write("# connection = conf_lib.get_server_connection(config_file)\n")
     file.write("\n")
