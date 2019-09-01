@@ -415,6 +415,62 @@ def create_file_install_lang(file):
         f.write("    model_lang.lang_install(res)\n")
 
 
+@check_file_exists
+def create_file_install_modules(file):
+    """
+    Create the skeleton of install_modules.py.
+    """
+    with open(file, 'w') as f:
+        f.write("# -*- coding: utf-8 -*-\n\n")
+        f.write("import openerplib\n")
+        f.write("import sys\n")
+        f.write("import openerplib\n")
+        f.write("from prefix import *\n")
+        f.write("from files import *\n")
+        f.write("from odoo_csv_tools.lib import conf_lib\n")
+        f.write("from odoo_csv_tools.lib.internal.rpc_thread import RpcThread\n")
+        f.write("from files import config_file\n\n")
+        f.write("connection = conf_lib.get_server_connection(config_file)\n\n")
+        f.write("model_module = connection.get_model('ir.module.module')\n")
+        f.write("model_module.update_list()\n\n")
+        f.write("# Set the modules to install\n")
+        f.write("module_names = []\n\n")
+        f.write("module_ids = model_module.search_read([['name', 'in', module_names]])\n\n")
+        f.write("rpc_thread = RpcThread(1)\n\n")
+        f.write("for module in module_ids:\n")
+        f.write("    if module['state'] == 'installed':\n")
+        f.write("        rpc_thread.spawn_thread(model_module.button_immediate_upgrade, [module['id']])\n")
+        f.write("    else:\n")
+        f.write("        rpc_thread.spawn_thread(model_module.button_immediate_install, [module['id']])\n")
+
+
+@check_file_exists
+def create_file_uninstall_modules(file):
+    """
+    Create the skeleton of uninstall_modules.py.
+    """
+    with open(file, 'w') as f:
+        f.write("# -*- coding: utf-8 -*-\n\n")
+        f.write("import openerplib\n")
+        f.write("import sys\n")
+        f.write("import openerplib\n")
+        f.write("from prefix import *\n")
+        f.write("from files import *\n")
+        f.write("from odoo_csv_tools.lib import conf_lib\n")
+        f.write("from odoo_csv_tools.lib.internal.rpc_thread import RpcThread\n")
+        f.write("from files import config_file\n\n")
+        f.write("connection = conf_lib.get_server_connection(config_file)\n\n")
+        f.write("model_module = connection.get_model('ir.module.module')\n")
+        f.write("model_module.update_list()\n\n")
+        f.write("# Set the modules to uninstall\n")
+        f.write("module_names = []\n\n")
+        f.write("module_ids = model_module.search_read([['name', 'in', module_names]])\n\n")
+        f.write("rpc_thread = RpcThread(1)\n\n")
+        f.write("for module in module_ids:\n")
+        f.write("    if module['state'] == 'installed':\n")
+        f.write("        rpc_thread.spawn_thread(model_module.button_immediate_uninstall, [module['id']])\n")
+
+
 def scaffold_dir():
     """
     Create the whole directory structure and the basic project files.
@@ -439,6 +495,8 @@ def scaffold_dir():
     create_file_lib(os.path.join(base_dir, 'funclib.py'))
     create_file_clean_data(os.path.join(base_dir, 'clean_data.py'))
     create_file_install_lang(os.path.join(base_dir, 'install_lang.py'))
+    create_file_install_modules(os.path.join(base_dir, 'install_modules.py'))
+    create_file_uninstall_modules(os.path.join(base_dir, 'uninstall_modules.py'))
 
     sys.stdout.write("Project created in %s\n" % os.path.abspath(base_dir))
 
