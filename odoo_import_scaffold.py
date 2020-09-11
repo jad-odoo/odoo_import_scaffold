@@ -344,6 +344,7 @@ def create_file_lib(file):
         f.write("                   (u'\%s', 'O'),\n" % 'xd4')
         f.write("                   (u'\%s', 'O'),\n" % 'xd5')
         f.write("                   (u'\%s', 'O'),\n" % 'xd6')
+        f.write("                   (u'\%s', 'c'),\n" % 'xe7')
         f.write("                   ]\n")
         f.write("    for a, b in replacements:\n")
         f.write("        val = val.replace(a, b)\n")
