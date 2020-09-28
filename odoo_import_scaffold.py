@@ -223,6 +223,9 @@ def create_file_prefix(file):
         f.write("# Defines here a identifier used in the created XML_ID.\n")
         f.write("project_name = '%s'\n" % project_name)
         f.write("\n")
+        f.write("DEFAULT_WORKER = 1\n")
+        f.write("DEFAULT_BATCH_SIZE = 20\n")
+        f.write("\n")
         f.write("# CONSTANTS\n")
         f.write("COMPANY_ID = 'base.main_company'\n")
         f.write("\n")
@@ -850,7 +853,7 @@ def write_end(file):
         ctx = "'context': \"{%s}\", " % ', '.join(ctx_opt)
 
     # file.write("processor.process(%s, dest_%s, {'model': '%s', %s'groupby': '', 'ignore': '', 'worker': %s, 'batch_size': %s}, 'set', verbose=False)\n\n" % (model_mapping_name, model_mapped_name, model, ctx, default_worker, default_batch_size))
-    file.write("processor.process(%s, dest_%s, {'model': '%s', %s'groupby': '', 'worker': %s, 'batch_size': %s}, 'set', verbose=False)\n\n" % (model_mapping_name, model_mapped_name, model, ctx, default_worker, default_batch_size))
+    file.write("processor.process(%s, dest_%s, {'model': '%s', %s'groupby': '', 'worker': DEFAULT_WORKER, 'batch_size': DEFAULT_BATCH_SIZE}, 'set', verbose=False)\n\n" % (model_mapping_name, model_mapped_name, model, ctx))
     file.write("processor.write_to_file('%s%s', python_exe='%s', path='%s')\n\n" % (model_mapped_name, script_extension, default_python_exe, default_path))
 
 
@@ -1201,8 +1204,6 @@ if __name__ == '__main__':
         outfile = os.path.join(base_dir,outfile)
         config = os.path.join(base_dir, config)
         csv_delimiter = ';'
-        default_worker = 1
-        default_batch_size = 10
         default_python_exe = ''
         default_path = ''
         
